@@ -24,6 +24,8 @@
  *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
+
+
 @IsTest
 private with sharing class fflib_SObjectUnitOfWorkTest
 {
@@ -34,6 +36,15 @@ private with sharing class fflib_SObjectUnitOfWorkTest
             PricebookEntry.SObjectType,
             Opportunity.SObjectType,
             OpportunityLineItem.SObjectType };
+    
+    @testSetup static void makeData(){
+        Account acc = new Account(Name = 'Test Account');
+        insert acc;
+
+         Product2 prod = new Product2(Name = 'Test Vehicle', PRO_SEL_Marca__c = 'Seat', PRO_SEL_IVA__c = 'REBU', PRO_DIV_Precio_de_compra__c = 10000, isActive = true, PRO_SEL_Estado__c = 'Tasación', PRO_TEX_Matricula__c = '1234ABC', PRO_BUS_Propietario__c = acc.Id);
+         insert prod;
+    }
+    
 
     @isTest
     private static void testUnitOfWorkEmail()
@@ -211,11 +222,14 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     @isTest
     private static void testDerivedUnitOfWork_CommitSuccess()
     {
+        Account acc  = [SELECT Id, Name FROM Account LIMIT 1];
+        
         // Insert Opporunities with UnitOfWork
         DerivedUnitOfWork uow = new DerivedUnitOfWork(MY_SOBJECTS);
         for(Integer o=0; o<10; o++)
         {
             Opportunity opp = new Opportunity();
+            opp.AccountId = acc.Id;
             opp.Name = 'UoW Test Name ' + o;
             opp.StageName = 'Open';
             opp.CloseDate = System.today();
@@ -313,12 +327,9 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     @isTest
     private static void testDerivedUnitOfWork_CommitDoWorkFail()
     {
-        Account acc = new Account(Name = 'Test Account');
-        insert acc;
-
-        Product2 prod = new Product2(Name = 'Test Vehicle', PRO_SEL_Marca__c = 'Seat', PRO_SEL_IVA__c = 'REBU', PRO_DIV_Precio_de_compra__c = 10000, isActive = true, PRO_SEL_Estado__c = 'Tasación', PRO_TEX_Matricula__c = '1234ABC', PRO_BUS_Propietario__c = acc.Id);
-        insert prod;
         
+        Account acc  = [SELECT Id, Name FROM Account LIMIT 1];
+                    
         // Insert Opporunities with UnitOfWork
         DerivedUnitOfWork uow = new DerivedUnitOfWork(MY_SOBJECTS);
         Opportunity opp = new Opportunity(AccountId = acc.Id);
@@ -369,7 +380,8 @@ private with sharing class fflib_SObjectUnitOfWorkTest
      */
     @isTest
     private static void testRegisterDirty_ExpectReplacement() {
-        final Opportunity insertedOpp = new Opportunity(Name = 'Original', StageName = 'Open', CloseDate = System.today());
+        Account acc  = [SELECT Id, Name FROM Account LIMIT 1];
+        final Opportunity insertedOpp = new Opportunity(Name = 'Original', StageName = 'Open', CloseDate = System.today(), AccountId = acc.Id);
         insert insertedOpp;
 
         Opportunity opp = new Opportunity(Id = insertedOpp.Id, Name = 'Never');
