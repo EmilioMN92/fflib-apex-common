@@ -110,7 +110,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
                     product.PRO_SEL_Marca__c = 'Audi';
                     product.Name = opp.Name + ' : Product : ' + i;
                     uow.registerNew(new List<SObject>{product});*/
-                    PricebookEntry pbe = new PricebookEntry([select Id, Product2Id from PricebookEntry WHERE Product2Id = :prod.Id]);
+                    PricebookEntry pbe = [SELECT Id, Product2Id FROM PricebookEntry WHERE Product2Id = :prod.Id LIMIT 1];
                     /*pbe.UnitPrice = 10;
                     pbe.IsActive = true;
                     pbe.UseStandardPrice = false;
@@ -255,7 +255,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
                 product.PRO_SEL_Marca__c = 'Audi';
                 product.Name = opp.Name + ' : Product : ' + i;
                 uow.registerNew(new List<SObject>{product});*/
-                PricebookEntry pbe = new PricebookEntry([select Id, Product2Id from PricebookEntry WHERE Product2Id = :prod.Id]);
+                PricebookEntry pbe = [SELECT Id, Product2Id FROM PricebookEntry WHERE Product2Id = :prod.Id LIMIT 1];
                 /*pbe.UnitPrice = 10;
                 pbe.IsActive = true;
                 pbe.UseStandardPrice = false;
