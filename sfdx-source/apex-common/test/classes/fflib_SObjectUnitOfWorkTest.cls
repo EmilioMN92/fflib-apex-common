@@ -49,6 +49,9 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     @isTest
     private static void testUnitOfWorkEmail()
     {
+        Account acc  = [SELECT Id, Name FROM Account LIMIT 1];
+        Product2 prod  = [SELECT Id, Name FROM Product2 LIMIT 1];
+        
         string testRecordName = 'UoW Test Name 1';
 
         Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
@@ -60,6 +63,9 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         uow.m_emailWork = new Mock_SendEmailWork();
 
         Opportunity opp = new Opportunity();
+        opp.AccountId = acc.Id;
+        opp.OPO_BUS_Vehiculo_a_tasar__c = prod.Id;
+        opp.OPP_BUS_Vehiculo_de_interes__c = prod.Id;
         opp.Name = testRecordName;
         opp.StageName = 'Open';
         opp.CloseDate = System.today();
@@ -82,12 +88,18 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     @isTest
     private static void testUnitOfWorkNewDirtyDelete()
     {
+        Account acc  = [SELECT Id, Name FROM Account LIMIT 1];
+        Product2 prod  = [SELECT Id, Name FROM Product2 LIMIT 1];
+        
         // Insert Opportunities with UnitOfWork
         {
             fflib_SObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(MY_SOBJECTS);
             for(Integer o=0; o<10; o++)
             {
                 Opportunity opp = new Opportunity();
+                opp.AccountId = acc.Id;
+                opp.OPO_BUS_Vehiculo_a_tasar__c = prod.Id;
+                opp.OPP_BUS_Vehiculo_de_interes__c = prod.Id;
                 opp.Name = 'UoW Test Name ' + o;
                 opp.StageName = 'Open';
                 opp.CloseDate = System.today();
@@ -223,13 +235,16 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     private static void testDerivedUnitOfWork_CommitSuccess()
     {
         Account acc  = [SELECT Id, Name FROM Account LIMIT 1];
-        
+        Product2 prod  = [SELECT Id, Name FROM Product2 LIMIT 1];
+
         // Insert Opporunities with UnitOfWork
         DerivedUnitOfWork uow = new DerivedUnitOfWork(MY_SOBJECTS);
         for(Integer o=0; o<10; o++)
         {
             Opportunity opp = new Opportunity();
             opp.AccountId = acc.Id;
+            opp.OPO_BUS_Vehiculo_a_tasar__c = prod.Id;
+            opp.OPP_BUS_Vehiculo_de_interes__c = prod.Id;
             opp.Name = 'UoW Test Name ' + o;
             opp.StageName = 'Open';
             opp.CloseDate = System.today();
@@ -329,10 +344,13 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     {
         
         Account acc  = [SELECT Id, Name FROM Account LIMIT 1];
-                    
+        Product2 prod  = [SELECT Id, Name FROM Product2 LIMIT 1];
+
         // Insert Opporunities with UnitOfWork
         DerivedUnitOfWork uow = new DerivedUnitOfWork(MY_SOBJECTS);
         Opportunity opp = new Opportunity(AccountId = acc.Id);
+        opp.OPO_BUS_Vehiculo_a_tasar__c = prod.Id;
+        opp.OPP_BUS_Vehiculo_de_interes__c = prod.Id;
         opp.Name = 'UoW Test Name 1';
         opp.StageName = 'Open';
         opp.CloseDate = System.today();
@@ -381,7 +399,9 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     @isTest
     private static void testRegisterDirty_ExpectReplacement() {
         Account acc  = [SELECT Id, Name FROM Account LIMIT 1];
-        final Opportunity insertedOpp = new Opportunity(Name = 'Original', StageName = 'Open', CloseDate = System.today(), AccountId = acc.Id);
+        Product2 prod  = [SELECT Id, Name FROM Product2 LIMIT 1];
+
+        final Opportunity insertedOpp = new Opportunity(Name = 'Original', StageName = 'Open', CloseDate = System.today(), AccountId = acc.Id, OPO_BUS_Vehiculo_a_tasar__c = prod.Id, OPP_BUS_Vehiculo_de_interes__c = prod.Id);
         insert insertedOpp;
 
         Opportunity opp = new Opportunity(Id = insertedOpp.Id, Name = 'Never');
@@ -405,7 +425,10 @@ private with sharing class fflib_SObjectUnitOfWorkTest
      */
     @isTest
     private static void testRegisterDirty_field() {
-        Opportunity opp = new Opportunity(Name = 'test name', StageName = 'Open', CloseDate = System.today());
+        Account acc  = [SELECT Id, Name FROM Account LIMIT 1];
+        Product2 prod  = [SELECT Id, Name FROM Product2 LIMIT 1];
+        
+        Opportunity opp = new Opportunity(Name = 'test name', StageName = 'Open', CloseDate = System.today(), AccountId = acc.Id, OPO_BUS_Vehiculo_a_tasar__c = prod.Id, OPP_BUS_Vehiculo_de_interes__c = prod.Id);
         insert opp;
 
         Opportunity nameUpdate = new Opportunity(Id = opp.Id, Name = 'UpdateName');
@@ -568,12 +591,15 @@ private with sharing class fflib_SObjectUnitOfWorkTest
 
     @isTest
     private static void testRegisterUpsert() {
-        Opportunity existingOpp = new Opportunity(Name = 'Existing Opportunity', StageName = 'Open', CloseDate = System.today());
+        Account acc  = [SELECT Id, Name FROM Account LIMIT 1];
+        Product2 prod  = [SELECT Id, Name FROM Product2 LIMIT 1];
+        
+        Opportunity existingOpp = new Opportunity(AccountId = acc.Id, OPO_BUS_Vehiculo_a_tasar__c = prod.Id, OPP_BUS_Vehiculo_de_interes__c = prod.Id, Name = 'Existing Opportunity', StageName = 'Open', CloseDate = System.today());
         insert existingOpp;
 
         existingOpp.StageName = 'Closed';
 
-        Opportunity newOpportunity = new Opportunity(Name = 'New Opportunity', StageName = 'Closed', CloseDate = System.today());
+        Opportunity newOpportunity = new Opportunity(Name = 'New Opportunity', StageName = 'Closed', CloseDate = System.today(), AccountId = acc.Id, OPO_BUS_Vehiculo_a_tasar__c = prod.Id, OPP_BUS_Vehiculo_de_interes__c = prod.Id);
 
         System.assertEquals(1, [SELECT COUNT() FROM Opportunity]);
         System.assertEquals(0, [SELECT COUNT() FROM Opportunity WHERE StageName = 'Closed']);
