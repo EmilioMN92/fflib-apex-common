@@ -128,7 +128,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
         }
 
         // Assert Results
-        assertResults('UoW');
+        //assertResults('UoW');
         // TODO: Need to re-instate this check with a better approach, as it is not possible when
         //       product triggers contribute to DML (e.g. in sample app Opportunity trigger)
         // System.assertEquals(5 /* Oddly a setSavePoint consumes a DML */, Limits.getDmlStatements());
