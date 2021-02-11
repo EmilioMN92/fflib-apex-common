@@ -313,9 +313,15 @@ private with sharing class fflib_SObjectUnitOfWorkTest
     @isTest
     private static void testDerivedUnitOfWork_CommitDoWorkFail()
     {
+        Account acc = new Account(Name = 'Test Account');
+        insert acc;
+
+        Product2 prod = new Product2(Name = 'Test Vehicle', PRO_SEL_Marca__c = 'Seat', PRO_SEL_IVA__c = 'REBU', PRO_DIV_Precio_de_compra__c = 10000, isActive = true, PRO_SEL_Estado__c = 'Tasación', PRO_TEX_Matricula__c = '1234ABC', PRO_BUS_Propietario__c = acc.Id);
+        insert prod;
+        
         // Insert Opporunities with UnitOfWork
         DerivedUnitOfWork uow = new DerivedUnitOfWork(MY_SOBJECTS);
-        Opportunity opp = new Opportunity();
+        Opportunity opp = new Opportunity(AccountId = acc.Id);
         opp.Name = 'UoW Test Name 1';
         opp.StageName = 'Open';
         opp.CloseDate = System.today();
