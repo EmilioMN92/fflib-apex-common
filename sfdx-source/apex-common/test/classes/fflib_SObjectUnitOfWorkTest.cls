@@ -84,6 +84,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
                 for(Integer i=0; i<o+1; i++)
                 {
                     Product2 product = new Product2();
+                    product.PRO_SEL_Marca__c = 'Audi';
                     product.Name = opp.Name + ' : Product : ' + i;
                     uow.registerNew(new List<SObject>{product});
                     PricebookEntry pbe = new PricebookEntry();
@@ -222,6 +223,7 @@ private with sharing class fflib_SObjectUnitOfWorkTest
             for(Integer i=0; i<o+1; i++)
             {
                 Product2 product = new Product2();
+                product.PRO_SEL_Marca__c = 'Audi';
                 product.Name = opp.Name + ' : Product : ' + i;
                 uow.registerNew(new List<SObject>{product});
                 PricebookEntry pbe = new PricebookEntry();
